@@ -89,8 +89,6 @@ const errorFoo: Foo = {
 	age: 15
 }; // Object literal may only specify known properties, and 'age' does not exist in type 'Foo'
 
-
-
 // Интерфейсы
 interface IFoo {
 	name: string
@@ -152,7 +150,7 @@ const str4: SomeStrings = "NewString";
 ```
 ## Дженерики (начало)
 
-[см. Дженерики](./Дженерики%20(Generics).md).
+[см. Дженерики](./generics.md).
 
 ## Работа с объектами
 
