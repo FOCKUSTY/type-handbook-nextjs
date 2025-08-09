@@ -1,4 +1,3 @@
 export default {
-  agreements: "Соглашения",
-  architectures: "Архитектуры",
+  "start-typings": "Начало типизации",
 };
