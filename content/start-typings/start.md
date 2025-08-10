@@ -28,6 +28,28 @@ const delta: [] = []; // !
 // etc...
 ```
 
+### Ошибки
+
+Тут ничего интересного, просто Вам не дадут переназначить переменную с каким-то определенным типом на другой
+
+```ts
+let name: string = "FOCKUSTY";
+
+name = 0; // Type 'number' is not assignable to type 'string'
+```
+
+Однако это можно сделать, если использовать `as {type}`
+
+```ts
+let name: string = "lanvalird";
+
+name = 0 as unknown as string; // ошибок нет
+// или
+name = 0 as any; // ошибок нет
+```
+
+Однако это плохая практика, потому что у Вас в программе могут появится непредвиденные ошибки (имею в виду: тогда зачем вообще использовать TypeScript, если используешь `any`?)
+
 ### Типы в функциях
 
 Больше Вы узнаете в [Типы в функциях](./types-in-functions.md)
@@ -50,6 +72,9 @@ function printHello2(name: string): void {
 const otherFunc = (num: number): void => {
 	console.log(num);
 };
+
+otherFunc("string");
+// Argument of type 'string' is not assignable to parameter of type
 ```
 
 ### Использование нескольких типов
@@ -108,15 +133,14 @@ class MyClass {
 const usernames: string[] = [
    "FOCKUSTY",
    "Valentin Bird",
-   "Adelya",
    "beyz1k",
    "Omonillo"
 ];
 
+// Тут используется дженерик (то, что в стрелках), можем пока что не обращать на него внимания
 const usernames2: Array<string> = [
    "FOCKUSTY",
    "Valentin Bird",
-   "Adelya",
    "beyz1k",
    "Omonillo"
 ];
@@ -127,7 +151,7 @@ const usernames3: {
 ```
 
 ```ts
-	// Проверка массива
+// Проверка массива
 type MaybeArray = string | string[]
 
 const foo = "";
@@ -151,7 +175,6 @@ const mebers: {
 } = {
 	FOCKUSTY: "ceo",
 	"Valentin Bird": "teamlead",
-	Adelya: "manager",
 	beyz1k: "promoter",
 	Omonillo: "promoter"
 };
@@ -165,7 +188,6 @@ const users: {
 } = [
 	"FOCKUSTY",
 	"Valentin Bird",
-	"Adelya",
 	"beyz1k",
 	"Omonillo"
 ];
@@ -193,10 +215,25 @@ const users: {
 const users: Map<string, string> = new Map([
 	["FOCKUSTY", "ceo"],
 	["Valentin Bird", "teamlead"],
-	["Adelya", "manager"],
 	["beyz1k", "promoter"],
 	["Omonillo", "promoter"]
 ]);
+
+// Тоже валидно
+const users2 = new Map<string, string>([
+	["FOCKUSTY", "ceo"],
+	["Valentin Bird", "teamlead"],
+	["beyz1k", "promoter"],
+	["Omonillo", "promoter"]
+]);
+
+// Лучше указывать типы, но без них можно
+const users3 = new Map([
+	["FOCKUSTY", "ceo"],
+	["Valentin Bird", "teamlead"],
+	["beyz1k", "promoter"],
+	["Omonillo", "promoter"]
+]); // Тогда будет тип Map<any, any>
 ```
 
 Итак, не будем обращать пока что внимания на стрелки, перейдём сразу к типам, что записаны в них.
@@ -207,5 +244,5 @@ const users: Map<string, string> = new Map([
 ```ts
 users.get("FOCKUSTY"); // string ("ceo")
 users.set("FOCKUSTY", "author");
-users.set("Adelya", "ceo");
+users.set("Valentin Bird", "ceo");
 ```

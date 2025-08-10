@@ -35,13 +35,12 @@ const foo: Foo<Array<string>> = {
 В повседневном использовании, как я думаю, не должно возникнуть вопросов по их использованию, однако это простые примеры, давайте перейдём к чему-нибудь посложнее.
 
 ```ts
-type Members = "FOCKUSTY"|"Valentin Bird"|"Adelya"|"beyz1k"|"Omonillo";
+type Members = "FOCKUSTY"|"Valentin Bird"|"beyz1k"|"Omonillo";
 type Foo<T extends string, K> = Map<T, K>;
 
 const foo: Foo<Members, string> = new Map([
 	["FOCKUSTY", "ceo"],
 	["Valentin Bird", "team leader"],
-	["Adelya", "manager"],
 	["beyz1k", "promoter"],
 	["Omonillo", "promoter"]
 ]);
