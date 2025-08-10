@@ -2,7 +2,7 @@
 
 Я решил вынести это в отдельный блок, чтобы было удобнее.
 
-```ts
+```ts copy
 // Стандартная функция на js
 function printHello(name) {
 	console.log("Hello, " + name);
@@ -24,12 +24,13 @@ const otherFunc = (num: number): void => {
 
 Рассмотри подробно:
 
-```ts
+```ts copy
 // Асинхронные функции
 async function getNumber(num: number) {
 	return num;
 }
-const getNumber2 = async(num: number) => {
+
+const getNumber2 = async (num: number) => {
 	return num;
 }
 
@@ -39,7 +40,7 @@ const data2 = getNumer2(0); // Promise<number>
 
 Примечание: Асинхронные функции всегда возвращают `Promise`.
 
-```ts
+```ts copy
 const languages = ["JavaScript", "TypeScript", "GoLang", "Rust", "C++", "C#"];
 
 languages.map(function(language: string): string {
@@ -53,10 +54,10 @@ languages.map((language: string): string => {
 
 ## Типизация объектов в функциях
 
-```ts
+```ts copy
 type Props = {
 	name: string;
-	age: number
+	age: number;
 };
 
 function someFunction({ name, age }: Props) {
@@ -76,9 +77,9 @@ console.log(someFunction(data));
 
 ## Дженерики в типах
 
-[Прошу ознакомиться, если не знакомы](./generics.md)
+[Прошу ознакомиться, если не знакомы](./generics.mdx)
 
-```ts
+```ts copy 
 function fromJson<T>(json: string): T {
 	return JSON.parse(json);
 }
@@ -96,7 +97,7 @@ console.log(user) // { id: "1", username: "FOCKUSTY" };
 
 Тут нет ничего особенного, мы просто в передаём в функцию тип, который мы хотим получить. Однако дженерики можно использовать не только для этого
 
-```ts
+```ts copy
 function mergeObjects<T, K>(first: T, second: K): T & K {
 	return { ...first, ...second };
 }
@@ -122,7 +123,7 @@ const user = mergeObjects<CreateUser, User>({
 
 Но стоп, что если мы передадим в дженерики не объект? Можно ли от этого защититься? — Да, можно!
 
-```ts
+```ts copy
 // Первый вариант
 function mergeObjects<T, K>(
 	first: { [key: string]: T },
@@ -146,7 +147,7 @@ function mergeObjects<
 **Итак вопрос**. Нужно ли каждый раз прописывать эти типы в дженерики?
 **Ответ — нет**, но почему? Сейчас покажу!
 
-```ts
+```ts copy
 function parseObject<T extends {[key: string]: unknown}>(object: T): T {
 	// тут будет код парсера
 	return object;

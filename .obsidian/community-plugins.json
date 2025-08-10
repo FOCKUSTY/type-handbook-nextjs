@@ -1,4 +1,5 @@
 [
   "markdown-prettifier",
-  "obsidian-plugin-prettier"
+  "obsidian-plugin-prettier",
+  "edit-mdx"
 ]

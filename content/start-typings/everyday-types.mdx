@@ -17,7 +17,7 @@
 
 # "Усиленная" типизация
 
-Желательно просмотреть узнать [дженерики](./generics.md)
+Желательно просмотреть узнать [дженерики](./generics.mdx)
 Прочитайте также [информацию то TypeScript](https://www.typescriptlang.org/docs/handbook/utility-types.html)
 Рассмотрим типы, которые встроены в TypeScript по умолчанию:
 
@@ -25,7 +25,7 @@
 
 Тип, который может использоваться совместно с `Promise`. Думаю, что все понимают, как он работает
 
-```ts
+```ts copy
 type A = Awaited<Promise<string>>;
 // type A - string
 type B = Awaited<Promise<Promise<number>>>;
@@ -38,14 +38,14 @@ type C = Awaited<boolean | Promise<number>>;
 
 Тип для создания необязательных объектов. Он делаем все ключи в объекте необязательными. Обычно он используется для обновления какой-то информации:
 
-```ts
+```ts copy
 // Сам тип выглядит так
 type Partial<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
 ```
 
-```ts
+```ts copy 
 interface User {
   username: string;
   description: string;
@@ -68,13 +68,13 @@ const updatedUser = updateUser(user, { description: "CEO, Backend-developer" });
 
 Противоположный тип к `Partial`.
 
-```ts
+```ts copy
 type Required<T> = {
   [P in keyof T]-?: T[P];
 }
 ```
 
-```ts
+```ts copy
 interface ICreateUser {
   username: string;
   description?: string
