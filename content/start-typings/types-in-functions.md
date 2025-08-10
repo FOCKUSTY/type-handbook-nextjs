@@ -1,6 +1,7 @@
 # Типы в функциях
 
 Я решил вынести это в отдельный блок, чтобы было удобнее.
+
 ```ts
 // Стандартная функция на js
 function printHello(name) {
@@ -20,7 +21,9 @@ const otherFunc = (num: number): void => {
 	console.log(num);
 };
 ```
+
 Рассмотри подробно:
+
 ```ts
 // Асинхронные функции
 async function getNumber(num: number) {
@@ -33,7 +36,9 @@ const getNumber2 = async(num: number) => {
 const data = getNumber(0); // Promise<number>
 const data2 = getNumer2(0); // Promise<number>
 ```
+
 Примечание: Асинхронные функции всегда возвращают `Promise`.
+
 ```ts
 const languages = ["JavaScript", "TypeScript", "GoLang", "Rust", "C++", "C#"];
 
@@ -45,7 +50,9 @@ languages.map((language: string): string => {
 	return language + " is the best";
 });
 ```
+
 # Объекты в функциях
+
 ```ts
 type Props = {
 	name: string;
