@@ -23,7 +23,7 @@ export default async function RootLayout({
           navbar={navbar}
           pageMap={await getPageMap()}
           footer={footer}
-          docsRepositoryBase="https://github.com/focksuty/type-handbook-nextjs/tree/main"
+          docsRepositoryBase="https://github.com/fockusty/type-handbook-nextjs/tree/main"
         >
           {children}
         </Layout>
