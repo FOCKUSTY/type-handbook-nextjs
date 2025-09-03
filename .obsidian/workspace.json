@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "content/start-typings/start.mdx",
+                "file": "content/start-typings/creating-your-types.mdx",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "start"
+              "title": "creating-your-types"
             }
           }
         ]
@@ -160,6 +160,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Создать новую базу": false,
       "switcher:Меню быстрого перехода": false,
       "graph:Граф": false,
       "canvas:Создать новый холст": false,
@@ -171,17 +172,19 @@
   },
   "active": "5538587c4d0fd97d",
   "lastOpenFiles": [
-    "content/index.mdx",
+    "content/start-typings/narrowing.md",
+    "content/start-typings/narrowing.mdx",
     "content/start-typings/creating-your-types.mdx",
+    "content/start-typings/generics.mdx",
+    "content/start-typings/start.mdx",
+    "content/index.mdx",
+    "content/start-typings/types-in-functions.mdx",
     "start-typings/start.md",
     "README.md",
     "start-typings",
     "content/start-typings/everyday-types.mdx",
-    "content/start-typings/generics.mdx",
     "content/start-typings/types-in-functions.md",
-    "content/start-typings/types-in-functions.mdx",
     "content/start-typings/start.md",
-    "content/start-typings/start.mdx",
     "content/start-typings/everyday-types.md",
     "content/start-typings/generics.md",
     "content/index.md",

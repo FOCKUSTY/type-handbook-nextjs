@@ -1,0 +1,68 @@
+# Сужение типов
+
+"Что это за монстр такой?" — спросите Вы, сейчас я попробую Вам ответить на этот вопрос
+
+## Пример
+
+Давайте представим, что у нас есть функция, которая может принимать
+
+```ts twoslash
+const print = (data: string | string[]) => { /* empty */ };
+```
+
+Окей, хорошо! Теперь нам нужно как-то определить, что нам поступает, строка или массив.
+Мы можем сделать это через `typeof`, который определяет тип (но с небольшим но)
+
+```ts copy twoslash
+const print = (data: string | string[]) => {
+  if (typeof data === "string") {
+    console.log(data);
+    return data;
+  } else {
+    const output = data.join("\n");
+
+    console.log(output);
+    
+    return output;
+  }
+}
+```
+
+Ну или можем сделать попроще:
+
+```ts copy twoslash
+const print = (data: string | string[]) => {
+  const output = typeof data === "string"
+    ? data
+    : data.join("\n");
+
+  console.log(output);
+
+  return output;
+};
+```
+
+### Возможные варианты typeof
+
+- `string`
+- `number`
+- `bigint`
+- `boolean`
+- `symbol`
+- `undefined`
+- `object`
+- `function`
+
+### Небольшое НО:
+
+Как Вы заметили, здесь нет типа `array`, потому что он помечается как `object`. Чтобы узнать достоверно,
+является ли сущность массивом, нужно исопльзовать встроенные метод в JavaScript: `Array.isArray`
+Он вернёт `true`, если сущность является массивом, иначе `false`
+
+```ts copy
+console.log(Array.isArray(["1", "2"])) // true
+console.log(Array.isArray(null)) // false
+console.log(Array.isArray(undefined)) // false
+console.log(Array.isArray({ hello: [] })) // false
+console.log(Array.isArray("str")) // false
+```
