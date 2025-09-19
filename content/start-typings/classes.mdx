@@ -1,3 +1,196 @@
 # Типизация классов
 
-в будущем...
+Для чего это нужно? Чтобы можно было выставлять разные модификаторы доступа и не только: readonly поля, методы, дженерики
+
+## Стандартный пример:
+
+```ts twoslash
+class Animal {
+  public readonly name: string;
+  //              ^?
+
+
+  public constructor(name: string) {
+    //                 ^?
+    this.name = name;
+  }
+}
+```
+
+Тут нет ничего примечательного. Поле `name` у нас выступает в качестве публичного, доступного только для чтения
+
+При желании, этот код можно упростить:
+
+```ts twoslash
+class Animal {
+  public constructor(public readonly name: string) {}
+}
+```
+
+Здесь мы прямо в конструкторе указываем всё, что нам нужно. И тот, и этот код равнозначны. Однако я предпочитаю второй, нежели первый
+
+- Почему у конструктора указан модификатор доступа? Его можно сделать приватным и защищённым?
+  - Да, конструктор можно сделать приватным и защищённым и это даже используется, только довольно редко (сам я не видел)
+  - Это мы обсудим после того, как изучим наследование
+  - Также стоит сказать, что нужно всегда ставить модификаторы доступа, даже если по умолчанию стоит `public`
+
+## Наследование через `implements`
+
+```ts twoslash
+interface IUser {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string
+};
+
+class User implements IUser {
+  public readonly created_at: string;
+  public updated_at?: string = undefined;
+
+  public constructor(
+    public readonly id: string,
+    public readonly name: string,
+  ) {
+    this.created_at = new Date().toISOString()
+  }
+
+  public change() {
+    this.updated_at = new Date().toISOString();
+  }
+}
+```
+
+Здесь нет ничего сложного. `implements` просто помогает нам писать более шаблонный класс с помощью типа, которые расширяет наш класс
+
+```ts twoslash
+// @errors: 2420
+interface IUser {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string
+};
+
+class User implements IUser {};
+```
+
+Однако тот вариант, предложенный мной, на деле плохой, ибо мы можем изменять поле `updated_at` напрямую, так как нам его защитить?
+
+```ts twoslash
+interface IUser {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string
+};
+
+class User implements IUser {
+  private _updated_at?: string = undefined;
+  
+  public readonly created_at: string;
+
+  public constructor(
+    public readonly id: string,
+    public readonly name: string,
+  ) {
+    this.created_at = new Date().toISOString()
+  }
+
+  public get updated_at() {
+    return this._updated_at;
+  }
+  
+  protected change() {
+    this._updated_at = new Date().toISOString();
+  }
+}
+```
+
+Здесь мы используем `protected` поле — оно даёт нам возможность использовать это поле в расширяемых нами классах.
+Также `private` поле, оно доступно только исходному классу и его невозможно получить извне
+
+## Наследование через `extends`
+
+```ts twoslash
+const MAX_ENERGY = 100;
+
+class Animal {
+  private _age: number;
+  private _energy: number;
+  protected _energy_offset: number;
+
+  public constructor(
+    public readonly name: string,
+    age: number
+  ) {
+    this._age = age;
+    this._energy_offset = Math.floor(age * 1.5);
+    this._energy = 100 -  this._energy_offset;
+  }
+
+  public pet() {
+    console.log("Вы погладили " + this.name);
+    
+    const newEnergy = this._energy + 5;
+    const maxEnergy = MAX_ENERGY - this._energy_offset;
+    
+    this._energy = newEnergy > maxEnergy
+      ? maxEnergy
+      : newEnergy;
+  }
+
+  public growUp() {
+    this._age++;
+    this._energy_offset--;
+  }
+
+  public sleep() {
+    this.energy = MAX_ENERGY;
+    console.log(this.name + " поспал и полон сил!");
+  }
+
+  protected set energy(energy: number) {
+    const newEnergy = this._energy + energy;
+    const maxEnergy = MAX_ENERGY - this._energy_offset;
+    
+    this._energy = newEnergy > maxEnergy
+      ? maxEnergy
+      : newEnergy;
+    }
+
+  public get energy(): number {
+    return this._energy;
+  }
+
+  public get age(): number {
+    return this._age;
+  }
+}
+
+class Dog extends Animal {
+  public constructor(
+    name: string,
+    age: number
+  ) {
+    super(name, age);
+  }
+
+  public throwBone() {
+    if (this.energy < 20) {
+      console.log(this.name + " слишком устал");
+      return;
+    }
+    
+    console.log("Вы кинули кость " + this.name);
+    this.energy = -15;
+  }
+}
+```
+
+Ух, ну надеюсь я не перестарался, что ж, пора разбирать код (хотя это должны делать Вы).
+Наследование даёт нам возможность использовать методы и поля от наследуемого класса, то есть
+мы сможем использовать `Animal.prototype.pet()` из `Dog.prototype.pet()`,
+также можно перезаписывать эти методы через `override` после модификатора доступа
+
+В общем-то здесь больше нет ничего удивительно нового, так что, удмаю, что на этом всё
