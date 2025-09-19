@@ -5,4 +5,5 @@ export default {
   "types-in-functions": {},
   "generics": {},
   "creating-your-types": {},
+  "classes": {}
 };
