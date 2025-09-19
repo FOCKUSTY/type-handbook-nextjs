@@ -2,7 +2,23 @@
 
 "Что это за монстр такой?" — спросите Вы, сейчас я попробую Вам ответить на этот вопрос
 
-## Пример
+## Примеры
+
+Примечание:
+Сужать типы можно с помощью `typeof`, `instanceof`, `Array.isArray`, `isNaN`:
+
+### `typeof`
+
+#### Возможные варианты `typeof`
+
+- `string`
+- `number`
+- `bigint`
+- `boolean`
+- `symbol`
+- `undefined`
+- `object`
+- `function`
 
 Давайте представим, что у нас есть функция, которая может принимать
 
@@ -16,13 +32,10 @@ const print = (data: string | string[]) => { /* empty */ };
 ```ts copy twoslash
 const print = (data: string | string[]) => {
   if (typeof data === "string") {
-    console.log(data);
     return data;
   } else {
     const output = data.join("\n");
 
-    console.log(output);
-    
     return output;
   }
 }
@@ -36,22 +49,89 @@ const print = (data: string | string[]) => {
     ? data
     : data.join("\n");
 
-  console.log(output);
-
   return output;
 };
 ```
 
-### Возможные варианты typeof
+Что здесь в итоге происходит? На деле всё просто: мы ограничиваем исходный тип какими-то другими. Разберем нашу функцию:
+она принимает `data` с типом `string|string[]`, а значит мы не можем знать наверняка, какой тип нам придёт, однако нам нужно как-то это узнать
+тут-то и помогает сужение типов: мы сами определяем, с каким типом мы хотим работать
 
-- `string`
-- `number`
-- `bigint`
-- `boolean`
-- `symbol`
-- `undefined`
-- `object`
-- `function`
+### `instanceof`
+
+```ts copy twoslash
+type MyError = string | string[] | Error;
+
+const printError = (error: MyError): string => {
+  if (error instanceof Error) {
+    return error.stack ?? error.message;
+  } else if (typeof error === "string") {
+    return error
+  } else {
+    return error.join("\n");
+  }
+}
+```
+
+Как работает `instanceof`? Он работает только с объектами (не с типами), для этого он и нужен — `typeof` работает только для встроенных типов
+(см. [возможные варианты `typeof`](#возможные-варианты-typeof))
+
+С помощью `instanceof` мы можем определить свои объекты, которые можем использовать для определения типа данного нам объекта
+
+### `Array.isArray`
+
+```ts copy twoslash
+type MaybeArray<T> = T | [T, ...T[]];
+
+const validateInput = <T>(data: MaybeArray<T>): {
+  elements: T[],
+  length: number,
+  text: string
+} => {
+  if (Array.isArray(data)) {
+    return {
+      elements: data,
+      length: data.length,
+      text: "Получен массив"
+    };
+  } else {
+    return {
+      elements: [data],
+      length: 1,
+      text: "Получен одиночный элемент"
+    };
+  }
+};
+```
+
+`Array.isArray` помогает нам понять, дали ли нам массив или нет, так как `typeof` определять массив как `object`.
+Тут, думаю, больше нечего рассказывать
+
+### `isNaN`
+
+```ts copy twoslash
+type MaybeNumber   = string | number;
+
+const calculateTotal = ({ price, quantity, currency }: { price: MaybeNumber, quantity: MaybeNumber, currency: string }): string => {
+  const numericPrice = +price;
+  const numericQuantity = +quantity;
+  
+  const isNotNumber = isNaN(numericPrice) || isNaN(numericQuantity)
+  if (isNotNumber) {
+    throw new Error("Цена и количество должны быть числами");
+  };
+
+  const isPositive = numericPrice <= 0 || numericQuantity <= 0;
+  if (isPositive) {
+    throw new Error("Цена и количество должны быть положительными");
+  };
+  
+  const total = numericPrice * numericQuantity;
+  const text = `Общая стоимость: ${total.toFixed(2)} ${currency}.`;
+  
+  return text;
+};
+```
 
 ### Небольшое НО:
 
