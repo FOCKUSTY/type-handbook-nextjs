@@ -7,15 +7,15 @@
 Данные тип используется для неопределенного типа (Когда тип может быть любой). Обычно использование типа `any` не приветствуется в данной языке и на него жалуются некоторые форматировщики по типу `eslint`. Однако данные тип (типы: `any/unknown`) можно использовать, когда тип и правда может быть любым, или когда излишняя типизация не к месту.
 Желательно не использовать данный тип, переменную с данным типом можно переопределить на любое значение, что может привести к непредвиденным ошибкам. Используйте тип `any/unknown` по назначению или тогда, когда знаете, что делаете.
 
-# Обычные типы
+## Обычные типы
 
-- `string` - тип строки (`"Привет"`, `'Привет'` и другие).
+- `string` - тип строки (`"Привет"`, `"Привет"` и другие).
 - `number` - числовой тип (`1`, `2`, `3.52`, `-23` и другие).
-- `bigint` - числовой тип (позволяет работать с более большими числами) (`1n`, `23n`, `12385735291999239576719235079235n`, `1n << 2n`, `1n <<< 2n` и другие).
-- `boolean` - тип булевого значения (`false` или `true`)
+- `bigint` - числовой тип (позволяет работать с более большими числами) (`1n`, `23n`, `123835n`, `1n << 2n`, `1n <<< 2n` и другие).
+- `boolean` - тип булево значения (`false` или `true`)
 - ...возможно тут ещё что-то появится... автору в голову ничего не лезет...
 
-# "Усиленная" типизация
+## "Усиленная" типизация
 
 Желательно просмотреть узнать [дженерики](./generics.mdx)
 Прочитайте также [информацию то TypeScript](https://www.typescriptlang.org/docs/handbook/utility-types.html)
@@ -25,27 +25,44 @@
 
 Тип, который может использоваться совместно с `Promise`. Думаю, что все понимают, как он работает
 
-```ts copy
-type A = Awaited<Promise<string>>;
-// type A - string
-type B = Awaited<Promise<Promise<number>>>;
-// type B - number
-type C = Awaited<boolean | Promise<number>>;
-// type C - boolean | number
+```ts twoslash
+// Вам лучше не видеть реализацию этого типа...
+// Тут используется много всего, что мы пока что не знаем, то обязательно к этому вернёмся
+
+type Awaited<T> = T extends null | undefined
+  ? T
+  : T extends object & { then(onfulfilled: infer F, ...args: infer _): any; }
+    ? F extends (value: infer V, ...args: infer _) => any
+      ? Awaited<V>
+      : never
+    : T;
 ```
+
+```ts twoslash
+type A = Awaited<Promise<string>>;
+type B = Awaited<Promise<Promise<number>>>;
+type C = Awaited<boolean | Promise<number>>;
+type D = Awaited<Promise<{
+  hello: Promise<string>,
+  world: string
+}>>
+```
+
+В принципе, `Awaited`, думаю, понятен и без объяснения, он просто убирает `Promise` с типов,
+буквально `Promise` наоборот
 
 ### `Partial<Type>`
 
 Тип для создания необязательных объектов. Он делаем все ключи в объекте необязательными. Обычно он используется для обновления какой-то информации:
 
-```ts copy
+```ts twoslash
 // Сам тип выглядит так
 type Partial<T> = {
   [P in keyof T]?: T[P] | undefined;
 };
 ```
 
-```ts copy 
+```ts twoslash 
 interface User {
   username: string;
   description: string;
@@ -61,27 +78,209 @@ const user: User = {
 };
 
 const updatedUser = updateUser(user, { description: "CEO, Backend-developer" });
-// updatedUser = { username: "FOCKUSTY", description: "CEO, Backend-developer" }
 ```
 
 ### `Required<Type>`
 
 Противоположный тип к `Partial`.
 
-```ts copy
+```ts twoslash
 type Required<T> = {
   [P in keyof T]-?: T[P];
 }
 ```
 
-```ts copy
+```ts twoslash
 interface ICreateUser {
   username: string;
   description?: string
 };
 
-const createUser = (user: ICreateUser): Required<ICreateUser> => { ... };
+const createUser = (user: ICreateUser): Required<ICreateUser> => {
+  /* some code */
+  return {} as Required<ICreateUser>
+};
 
 const user = createUser({ username: "FOCKUSTY" });
-// type user - { username: string, description: string }
 ```
+
+### `Readonly<Type>`
+
+```ts twoslash
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P];
+};
+```
+
+```ts twoslash
+type Photo = {
+  name: string
+  camera: string
+  date: string
+  location: string
+}
+
+const DEFAULT_PHOTO: Photo = {
+  name: "Some name",
+  camera: "Nikon D3500",
+  date: new Date().toISOString(),
+  location: "Russian, Ufa"
+};
+
+// Плохо, потому что можно изменять значения
+```
+
+```ts twoslash
+// @errors: 2540
+type Photo = {
+  name: string
+  camera: string
+  date: string
+  location: string
+}
+
+const DEFAULT_PHOTO: Readonly<Photo> = {
+  name: "Some name",
+  camera: "Nikon D3500",
+  date: new Date().toISOString(),
+  location: "Russian, Ufa"
+};
+
+DEFAULT_PHOTO.name = "New name";
+```
+
+Также по мимо этого можно самому ставить `readonly` поля (см. [типизация классов](/start-typings/classes))
+
+### `Record<Keys, Type>`
+
+Наверное один из самых полезных типов (для создания типизированных объектов)
+
+Возможно не совсем понятно, что он делает, так что сейчас я поясню: он каждому передаваемому ключу выставляет переданные ему тип:
+
+```ts twoslash
+type Record<K extends keyof any, T> = {
+  [P in K]: T
+}
+```
+
+```ts twoslash
+type Language = "ru" | "en" | "es";
+type TranslationKeys =
+  | "title"
+  | "description";
+type Translation = Record<TranslationKeys, string>;
+type Translations = Record<Language, Translation>;
+
+const translations: Translations = {
+  ru: {
+    title: "Заголовок",
+    description: "Описание"
+  },
+  en: {
+    title: "Title",
+    description: "Description"
+  },
+  es: {
+    title: "Título",
+    description: "Descripción"
+  }
+};
+
+const getTranslation = <L extends Language, K extends TranslationKeys>(lang: L, key: K): Translations[L][K] => {
+  return translations[lang][key];
+};
+```
+
+### `Pick<Type, Keys>`
+
+Буквально: мы берем определенные поля в объекте по ключам
+
+```ts twoslash
+type Pick<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+```
+
+```ts twoslash
+interface User {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+type CreateUser = Pick<User, "name">;
+
+const user: CreateUser = {
+  name: "FOCKUSTY"
+};
+```
+
+### `Exluce<Type, ExcludedMembers>`
+
+Довольно понятное и простое, хочу сказать, что можем применяться для любых типов (вот это да)
+
+```ts twoslash
+type Exclude<T, U> = T extends U ? never : T;
+```
+
+```ts twoslash
+type AllConfigs =
+  | "date"
+  | "name"
+  | "dir"
+  | "root"
+
+type DirConfigs =
+  | "dir"
+  | "root"
+
+type InfoConfigs = Exclude<AllConfigs, DirConfigs>;
+```
+
+```ts twoslash
+type MaybeArray<T> = T | T[];
+type MyArray<T> = Exclude<MaybeArray<T>, T>;
+
+declare const a: MyArray<"hello">;
+```
+
+- Взял у [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers)
+```ts twoslash
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; x: number }
+  | { kind: "triangle"; x: number; y: number };
+ 
+type MyType = Exclude<Shape, { kind: "circle" }>
+```
+
+### `Omit<Type, Keys>`
+
+Противоположное `Pick`: мы не берём типы, а их исключаем
+
+```ts twoslash
+type Omit<T, K extends keyof any> = { // Хотя было бы лучше использовать keyof T
+  [P in Exclude<keyof T, K>]: T[P]
+};
+```
+
+```ts twoslash
+interface User {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+type UpdateUser = Omit<User, "created_at"|"updated_at">;
+
+const user: UpdateUser = {
+  id: "123",
+  name: "FOCKUSTY",
+};
+```
+
+### Другие типы
+
+В разработке...

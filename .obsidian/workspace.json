@@ -170,8 +170,10 @@
       "edit-mdx:New .mdx file": false
     }
   },
-  "active": "5538587c4d0fd97d",
+  "active": "c266c695702cdc4a",
   "lastOpenFiles": [
+    "content/start-typings/classes.mdx",
+    "content/start-typings/classes.ts",
     "content/start-typings/narrowing.md",
     "content/start-typings/narrowing.mdx",
     "content/start-typings/creating-your-types.mdx",
