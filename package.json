@@ -1,7 +1,11 @@
 {
-  "name": "laf-docs",
-  "version": "0.1.0",
-  "private": true,
+  "name": "type-handbook",
+  "version": "1.0.0",
+  "author": {
+    "name": "FOCKUSTY",
+    "email": "viserd.yt@gmail.com",
+    "url": "https://fockusty.vercel.app"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
